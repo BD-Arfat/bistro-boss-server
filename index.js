@@ -23,11 +23,25 @@ async function run() {
     await client.connect();
 
     const menuCollection = client.db("bistro-boss").collection("menus");
-
+    const cartCollection = client.db("bistro-boss").collection("carts");
+    // আপনি যদি সারভার এর ডাটা পেতে চান 
     app.get("/menus", async (req, res) => {
       const result = await menuCollection.find().toArray();
       res.send(result)
     });
+
+    // carts collection
+    app.post('/carts', async(req, res) =>{
+      const cartItems = req.body;
+      const result = await cartCollection.insertOne(cartItems);
+      res.send(result)
+    })
+    app.get('/carts', async(req, res)=>{
+      const email = req.query.email;
+      const query = {email : email}
+      const result = await cartCollection.find(query).toArray();
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
